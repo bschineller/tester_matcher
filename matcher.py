@@ -136,6 +136,38 @@ def reload_bugs(conn):
 	conn.commit()
 
 
+def get_matches(conn, countries, devices):
+
+    try:
+        cur = conn.cursor()
+        sql_selectfrom = "select t.testerid, t.firstname, t.lastname, t.country, d.deviceid, d.description as devicetype, count(distinct bugid) as experience from testers as t left join tester_device as td on (t.testerid = td.testerid) left join devices as d on (td.deviceid = d.deviceid) left join bugs b on (b.deviceid = d.deviceid and b.testerid = t.testerid) "
+        sql_group_order = " group by t.testerid, t.firstname, t.lastname, t.country, d.deviceid, d.description order by count(distinct bugid) desc;"
+
+        if (countries.upper() == "ALL"):
+        	country_clause = " (1=1)  "
+        else:
+        	country_clause = " t.country in (" + countries + ") "
+
+        if (devices.upper() == "ALL"):
+        	device_clause = " (1=1)  "
+        else:
+        	device_clause = " d.description in (" + devices + ") "
+
+
+        where_clause = "WHERE " + country_clause + " AND " + device_clause
+        print(where_clause)	
+
+        sql = sql_selectfrom + " " + where_clause + " " + sql_group_order
+
+        cur.execute(sql)
+
+
+
+    except Error as e:
+        print(e)
+
+    return cur
+
  
 def main(db_file):
 
@@ -158,7 +190,7 @@ def main(db_file):
        	for row in rows:
        		print(row)
 
-       	countryCriteria = input("What Countries? ('ALL' or a comma-separated list of country codes e.g. 'US, CA') : ")
+       	countryCriteria = input("What Countries? ('ALL' or a comma-separated list of single-quoted country codes) : ")
         print("You entered: " + countryCriteria)
 
         cur.execute('SELECT DISTINCT description from devices order by description;')
@@ -169,8 +201,14 @@ def main(db_file):
        		print(row)
 
 
-       	deviceCriteria = input("What Devices? ('ALL' or a comma-separated list of device names e.g. 'iPhone 4') : ")
+       	deviceCriteria = input("What Devices? ('ALL' or a comma-separated list of single-quoted device names) : ")
         print("You entered: " + deviceCriteria)
+
+        matchResultCur = get_matches(conn, countryCriteria, deviceCriteria)
+        rows = matchResultCur.fetchall()
+       	for row in rows:
+       		print(row)
+       
 
 
     else:
