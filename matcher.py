@@ -140,15 +140,16 @@ def get_matches(conn, countries, devices):
 
     try:
         cur = conn.cursor()
-        sql_selectfrom = "select t.testerid, t.firstname, t.lastname, t.country, d.deviceid, d.description as devicetype, count(distinct bugid) as experience from testers as t left join tester_device as td on (t.testerid = td.testerid) left join devices as d on (td.deviceid = d.deviceid) left join bugs b on (b.deviceid = d.deviceid and b.testerid = t.testerid) "
+#        sql_selectfrom = "select t.testerid, t.firstname, t.lastname, t.country, d.deviceid, d.description as devicetype, count(distinct bugid) as experience from testers as t left join tester_device as td on (t.testerid = td.testerid) left join devices as d on (td.deviceid = d.deviceid) left join bugs b on (b.deviceid = d.deviceid and b.testerid = t.testerid) "
+        sql_selectfrom = "select t.firstname, t.lastname, t.country, d.description as devicetype, count(distinct bugid) as experience from testers as t left join tester_device as td on (t.testerid = td.testerid) left join devices as d on (td.deviceid = d.deviceid) left join bugs b on (b.deviceid = d.deviceid and b.testerid = t.testerid) "
         sql_group_order = " group by t.testerid, t.firstname, t.lastname, t.country, d.deviceid, d.description order by count(distinct bugid) desc;"
 
-        if (countries.upper() == "ALL"):
+        if (countries.upper() == "ALL" or countries.upper() == "'ALL'"):
         	country_clause = " (1=1)  "
         else:
         	country_clause = " t.country in (" + countries + ") "
 
-        if (devices.upper() == "ALL"):
+        if (devices.upper() == "ALL" or devices.upper() == "'ALL'"):
         	device_clause = " (1=1)  "
         else:
         	device_clause = " d.description in (" + devices + ") "
@@ -205,7 +206,11 @@ def main(db_file):
         print("You entered: " + deviceCriteria)
 
         matchResultCur = get_matches(conn, countryCriteria, deviceCriteria)
+
         rows = matchResultCur.fetchall()
+        print("There are " + str(len(rows)) + " matching Testers.")
+        print("First Name, Last Name, Country, Device, Experience(# Bugs)")
+
        	for row in rows:
        		print(row)
        
