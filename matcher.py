@@ -52,7 +52,7 @@ def reload_testers(conn):
 	next(csv_data, None)  # skip the headers
 
 	for row in csv_data:
-		print(row)
+#		print(row)
 
 		c.execute('INSERT INTO testers(testerid, firstname, lastname, country,lastlogin ) VALUES(?, ?, ?, ?, ?)', row)
 
@@ -77,7 +77,7 @@ def reload_devices(conn):
 	next(csv_data, None)  # skip the headers
 
 	for row in csv_data:
-		print(row)
+#		print(row)
 
 		c.execute('INSERT INTO devices(deviceid, description ) VALUES(?, ?)', row)
 
@@ -103,7 +103,7 @@ def reload_tester_device(conn):
 	next(csv_data, None)  # skip the headers
 
 	for row in csv_data:
-		print(row)
+#		print(row)
 
 		c.execute('INSERT INTO tester_device(testerid, deviceid) VALUES(?, ?)', row)
 
@@ -129,7 +129,7 @@ def reload_bugs(conn):
 	next(csv_data, None)  # skip the headers
 
 	for row in csv_data:
-		print(row)
+#		print(row)
 
 		c.execute('INSERT INTO bugs(bugid, deviceid, testerid) VALUES(?, ?, ?)', row)
 
@@ -155,7 +155,7 @@ def get_matches(conn, countries, devices):
 
 
         where_clause = "WHERE " + country_clause + " AND " + device_clause
-        print(where_clause)	
+#        print(where_clause)	
 
         sql = sql_selectfrom + " " + where_clause + " " + sql_group_order
 
